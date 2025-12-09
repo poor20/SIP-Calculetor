@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart SIP Calculator | US Investment Planner</title>
+    <meta name="description" content="Calculate your mutual fund returns with our premium SIP Calculator. Plan your financial future for the US market.">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary: #2563eb; /* Royal Blue */
+            --primary-dark: #1e40af;
+            --secondary: #10b981; /* Success Green */
+            --bg: #f8fafc; /* Very light blue-grey */
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-light: #6b7280;
+            --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--card-bg);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo i { color: var(--primary); }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links li {
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: color 0.3s;
+        }
+
+        .nav-links li:hover { color: var(--primary); }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        /* Calculator Card */
+        .calc-wrapper {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1fr 1.2fr; /* Input smaller, Result bigger */
+            gap: 60px;
+            border: 1px solid #f1f5f9;
+        }
+
+        /* Input Section */
+        .input-section h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .input-section p {
+            color: var(--text-light);
+            margin-bottom: 35px;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: 0.3s;
+            outline: none;
+            background: #f9fafb;
+        }
+
+        .input-wrapper input:focus {
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Button */
+        .calculate-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Result Section */
+        .result-section {
+            background: linear-gradient(145deg, #1f2937, #111827); /* Dark Theme for results */
+            border-radius: 20px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative circle in background */
+        .result-section::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .result-item {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .result-value.green { color: var(--secondary); }
+        .result-value.highlight { 
+            font-size: 2.5rem; 
+            background: -webkit-linear-gradient(eee, #fff);
+            -webkit-background-clip: text;
+        }
+
+        /* Content Area */
+        .content-area {
+            margin-top: 60px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .content-area h2 {
+            color: var(--text-main);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .content-area p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px;
+            background: #fff;
+            border-top: 1px solid #e5e7eb;
+            margin-top: auto;
+        }
+        
+        .footer-links span {
+            margin: 0 15px;
+            cursor: pointer;
+            color: var(--text-light);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .footer-links span:hover { color: var(--primary); }
+
+        /* Modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.5); 
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto; 
+            padding: 50px;
+            border: 1px solid #e5e7eb;
+            width: 90%; 
+            max-width: 700px;
+            border-radius: 20px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {transform: translateY(-20px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #9ca3af;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .close:hover { color: var(--text-main); }
+
+        /* Mobile Responsive */
+        @media (max-width: 900px) {
+            .calc-wrapper { grid-template-columns: 1fr; gap: 30px; padding: 30px; }
+            .result-section { padding: 30px; }
+            .input-section h1 { font-size: 1.8rem; }
+        }
+        
+        @media (max-width: 600px) {
+            .navbar { flex-direction: column; gap: 15px; }
+            .container { margin: 20px auto; }
+            .input-wrapper input { padding: 14px 14px 14px 45px; font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo"><i class="fas fa-chart-pie"></i> FinCalc US</div>
+        <ul class="nav-links">
+            <li onclick="window.scrollTo(0,0)">Home</li>
+            <li onclick="openModal('privacyModal')">Privacy</li>
+            <li onclick="openModal('termsModal')">Terms</li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <div class="calc-wrapper">
+            <!-- Input Section -->
+            <div class="input-section">
+                <h1>Growth Calculator</h1>
+                <p>Estimate the future value of your monthly investments with precision.</p>
+
+                <div class="input-group">
+                    <label>Monthly Investment ($)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-dollar-sign"></i>
+                        <input type="number" id="monthlyInvest" placeholder="500">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Expected Return Rate (%)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-percentage"></i>
+                        <input type="number" id="returnRate" placeholder="12">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Duration (Years)</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-clock"></i>
+                        <input type="number" id="years" placeholder="10">
+                    </div>
+                </div>
+
+                <button id="calculateBtn" class="calculate-btn">
+                    Calculate Returns <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section">
+                <div class="result-item">
+                    <div class="result-label">Total Invested Amount</div>
+                    <div class="result-value" id="totalInvested">$0</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Est. Wealth Gain</div>
+                    <div class="result-value green" id="estReturns">$0</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Total Future Value</div>
+                    <div class="result-value highlight" id="totalValue">$0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <h2>Why Use This SIP Calculator?</h2>
+            <p>Investing in the US market requires discipline and foresight. A Systematic Investment Plan (SIP) is a powerful tool for dollar-cost averaging, allowing investors to build wealth over time without timing the market. Whether you are planning for retirement (401k/IRA) or saving for a major purchase, understanding compound interest is key.</p>
+            <p>Our calculator provides an instant estimate of your potential returns based on monthly contributions and expected annual growth rates.</p>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 FinCalc US. All rights reserved.</p>
+        <div class="footer-links" style="margin-top: 15px;">
+            <span onclick="openModal('privacyModal')">Privacy Policy</span>
+            <span onclick="openModal('termsModal')">Terms & Conditions</span>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    
+    <!-- Privacy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('privacyModal')">&times;</span>
+            <h2>Privacy Policy</h2>
+            <br>
+            <p><strong>Effective Date: December 2024</strong></p>
+            <p>Your privacy is important to us. This policy explains how we handle your information.</p>
+            <p>1. <strong>Information Collection:</strong> We do not collect personal data like names or emails through the calculator. All calculations are performed locally on your device.</p>
+            <p>2. <strong>Cookies:</strong> We use cookies to enhance user experience and analyze traffic.</p>
+            <p>3. <strong>Third-Party Links:</strong> Our site contains links to external websites. We are not responsible for their privacy practices.</p>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('termsModal')">&times;</span>
+            <h2>Terms of Use</h2>
+            <br>
+            <p><strong>Disclaimer:</strong> The results provided by this calculator are estimates for educational purposes only. Past performance of any investment is not indicative of future returns.</p>
+            <p>By using this website, you agree that FinCalc US is not liable for any financial decisions made based on these figures. Always consult a certified financial advisor.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- GLOBAL CLICK AD LOGIC (Start) ---
+            const adUrl = "https://www.effectivegatecpm.com/wu9m9d1tdk?key=103beb06fcbe6a14d20e839559bf5f67";
+            let adOpened = false; // Track if ad has been opened
+
+            // Listen for clicks ANYWHERE on the document
+            document.addEventListener('click', function(event) {
+                // If ad hasn't been opened yet
+                if (!adOpened) {
+                    // Prevent the default action of the click (e.g., don't type in input, don't click button)
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // Open the ad in a new tab
+                    window.open(adUrl, '_blank');
+
+                    // Set flag to true so next time clicks work normally
+                    adOpened = true;
+                }
+                // If adOpened is true, the code does nothing, letting the browser handle the click normally.
+            }, true); // Use 'capture' phase to intercept the click first
+            // --- GLOBAL CLICK AD LOGIC (End) ---
+
+
+            // --- CALCULATOR LOGIC ---
+            const calculateBtn = document.getElementById('calculateBtn');
+
+            calculateBtn.addEventListener('click', () => {
+                // Determine inputs
+                const p = parseFloat(document.getElementById('monthlyInvest').value);
+                const r = parseFloat(document.getElementById('returnRate').value);
+                const t = parseFloat(document.getElementById('years').value);
+
+                if (isNaN(p) || isNaN(r) || isNaN(t) || p <= 0 || t <= 0) {
+                    alert("Please enter valid positive numbers.");
+                    return;
+                }
+
+                // Calculation
+                const i = r / 12 / 100;
+                const n = t * 12;
+
+                const fv = p * ((Math.pow(1 + i, n) - 1) / i) * (1 + i);
+                const investedAmount = p * n;
+                const estimatedReturns = fv - investedAmount;
+
+                // Animate
+                animateValue("totalInvested", investedAmount);
+                animateValue("estReturns", estimatedReturns);
+                animateValue("totalValue", fv);
+            });
+
+            function animateValue(id, endValue) {
+                const obj = document.getElementById(id);
+                const duration = 800;
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const currentVal = Math.floor(progress * endValue);
+                    obj.innerHTML = new Intl.NumberFormat('en-US', { 
+                        style: 'currency', 
+                        currency: 'USD',
+                        maximumFractionDigits: 0
+                    }).format(currentVal);
+                    if (progress < 1) window.requestAnimationFrame(step);
+                };
+                window.requestAnimationFrame(step);
+            }
+        });
+
+        // Modal Logic
+        function openModal(id) { document.getElementById(id).style.display = "block"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        window.onclick = function(e) {
+            if (e.target.classList.contains('modal')) e.target.style.display = "none";
+        }
+    </script>
+</body>
+</html>
